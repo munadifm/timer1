@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 Minute Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            height: 100vh;
+            position: relative;
+        }
+        #timer {
+            font-size: 48px;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+        }
+        .buttons {
+            position: absolute;
+            top: 150px;
+            left: 50px;
+           
+        }
+        .buttons button {
+            font-size: 18px;
+            margin: 5px;
+            padding: 10px 20px;
+        }
+        #history {
+            position: absolute;
+            bottom: 20px;
+            left: 550px;
+            font-size: 18px;
+        }
+        #history h2 {
+            margin: 0;
+        }
+        
+        #historyList {
+            list-style-type: none;
+            padding: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        #historyList li {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="timer">05:00</div>
+    <div class="buttons">
+        <button onclick="startTimer()">Start</button>
+        <button onclick="stopTimer()">Stop</button>
+        <button onclick="resetTimer()">Reset</button>
+        <button id="bg-button" onclick="nextBackground()">Next</button>
+    </div>
+    
+ 
+    <div id="history">
+        <h2>History</h2>
+        <ul id="historyList"></ul>
+    </div>
+
+    <script>
+        let timerInterval;
+        let timeRemaining = 60;
+        let isRunning = false;
+		let bgImages = [
+            'url("https://images.pexels.com/photos/5987212/pexels-photo-5987212.jpeg")',
+            'url("https://images.pexels.com/photos/1276429/pexels-photo-1276429.jpeg")',
+            'url("https://images.pexels.com/photos/590663/pexels-photo-590663.jpeg")'
+        ];
+        let currentBgIndex = 0;
+
+        document.body.style.backgroundImage = bgImages[currentBgIndex];
+
+        function nextBackground() {
+            currentBgIndex = (currentBgIndex + 1) % bgImages.length;
+            document.body.style.backgroundImage = bgImages[currentBgIndex];
+        }
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            timerInterval = setInterval(() => {
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    logHistory('Timer Ended');
+                    isRunning = false;
+                    return;
+                }
+                timeRemaining--;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (!isRunning) return;
+            clearInterval(timerInterval);
+            isRunning = false;
+            logHistory('Time  ' + formatTime(timeRemaining));
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timeRemaining = 60;
+            updateTimerDisplay();
+            
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timer').textContent = 
+                (minutes < 10 ? '0' : '') + minutes + ':' + 
+                (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return (minutes < 10 ? '0' : '') + minutes + ':' + 
+                   (remainingSeconds < 10 ? '0' : '') + remainingSeconds;
+        }
+
+        function logHistory(action) {
+            const historyList = document.getElementById('historyList');
+            const listItem = document.createElement('li');
+            listItem.textContent = action;
+            historyList.appendChild(listItem);
+        }
+    </script>
+</body>
+</html>
